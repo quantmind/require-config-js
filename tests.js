@@ -6,6 +6,6 @@
             expect(typeof(require.paths)).toBe('object');
             expect(typeof(require.shim)).toBe('object');
             expect(require.deps instanceof Array).toBe(true);
-            expect(typeof(require.buildUrl)).toBe('string');
+            expect(typeof(require.buildUrl)).toBe('undefined');
         });
     });
