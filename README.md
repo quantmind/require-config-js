@@ -1,7 +1,7 @@
 Require Configuration Script
 =================================
 
-[![Build Status](https://travis-ci.org/quantmind/require-config-js.svg?branch=master)](https://travis-ci.org/quantmind/require-config-js)
+[![Build Status](https://travis-ci.org/quantmind/require-config-js.svg?branch=gh-pages)](https://travis-ci.org/quantmind/require-config-js)
 
 This should be the first script to include on the page, followd by [requirejs][]
 
