@@ -9,4 +9,4 @@ This should be the first script to include on the page, followd by [requirejs][]
     <script src='//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.min.js' type='application/javascript'></script>
 
 
-[requirejs] (http://requirejs.org/) "Require JS"
+[requirejs]: http://requirejs.org/ "Require JS"
