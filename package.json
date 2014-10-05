@@ -1,0 +1,24 @@
+{
+    "name": "require-config",
+    "title": "require-config",
+    "version": "0.1.0",
+    "homepage": "http://quantmind.github.io/require-config-js/require-config.js",
+    "author": {
+        "name": "Luca Sbardella",
+        "email": "luca.sbardella@gmail.com"
+    },
+    "licenses": [
+        {
+            "type": "BSD"
+        }
+    ],
+    "devDependencies": {
+        "grunt": "",
+        "grunt-contrib-jshint": "",
+        "grunt-contrib-uglify": "",
+        "grunt-contrib-jasmine": ""
+    },
+    "scripts": {
+        "test": "grunt jasmine"
+    }
+}
