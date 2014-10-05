@@ -21,6 +21,7 @@ var require = (function (require) {
         "d3": "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3",
         "gridster": "//cdnjs.cloudflare.com/ajax/libs/jquery.gridster/0.2.1/jquery.gridster",
         "holder": "//cdnjs.cloudflare.com/ajax/libs/holder/2.3.1/holder",
+        "highlight": "//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js",
         "jquery": "//code.jquery.com/jquery-1.11.1",
         "leaflet": "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js",
         "mathjax": {
