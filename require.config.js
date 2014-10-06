@@ -15,7 +15,6 @@ var require = (function (require) {
         "angular-sanitize": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular-sanitize",
         "aws": "//sdk.amazonaws.com/js/aws-sdk-2.0.0-rc13",
         "bootstrap": "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap",
-        "bootstrap_css": "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap",
         "codemirror": "//cdnjs.cloudflare.com/ajax/libs/codemirror/3.21.0/codemirror",
         "c3": "//cdnjs.cloudflare.com/ajax/libs/c3/0.3.0/c3",
         "d3": "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3",
@@ -24,6 +23,7 @@ var require = (function (require) {
         "highlight": "//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js",
         "jquery": "//code.jquery.com/jquery-1.11.1",
         "leaflet": "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js",
+        "marked": "//cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked",
         "mathjax": {
             "url": "//cdn.mathjax.org/mathjax/latest/MathJax.js",
             "urlparams": "config=TeX-AMS-MML_HTMLorMML"
@@ -53,6 +53,9 @@ var require = (function (require) {
         },
         "jquery-cookies": {
             deps: ["jquery"]
+        },
+        highlight: {
+            exports: "hljs"
         },
         select: {
             deps: ["jquery"]
@@ -96,6 +99,8 @@ var require = (function (require) {
                 }
                 if (path.substring(0, 2) === '//')
                     path = protocol + path;
+                if (path.substring(path.length-3) === end)
+                    path = path.substring(0, path.length-3);
                 all[name] = path;
             }
         }

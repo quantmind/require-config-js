@@ -1,2 +1,4 @@
+.DS_Store
+.pydevproject
 .project
 node_modules
