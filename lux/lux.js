@@ -199,13 +199,15 @@ function(angular, root) {
     //  Lux Api service factory for angular
     //  ---------------------------------------
     angular.module('lux.services', [])
-        .service('$lux', ['$location', '$q', '$http', '$log', function ($location, $q, $http, $log) {
+        .service('$lux', ['$location', '$q', '$http', '$log', '$timeout',
+                function ($location, $q, $http, $log, $timeout) {
             var $lux = this;
 
             this.location = $location;
             this.log = $log;
             this.http = $http;
             this.q = $q;
+            this.timeout = $timeout;
 
             // A post method with CSRF parameter
             this.post = function (url, data, cfg) {
@@ -244,22 +246,83 @@ function(angular, root) {
                 }
                 // set the location.hash to the id of
                 // the element you wish to scroll to.
-                var target = $(hash);
-                if (target.length) {
-                    //$lux.location.hash(hash);
-                    //$anchorScroll();
-                    if (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                    offset = offset ? offset : 0;
+                var target = document.getElementById(hash.substring(1));
+                if (target) {
+                    $lux.location.hash(hash);
                     $lux.log.info('Scrolling to target');
-                    $('html, body').animate({
-                        scrollTop: target.offset().top + offset
-                    }, 1000);
+                    scrollTo(target);
                 } else
                     $lux.log.warning('Cannot scroll, target not found');
             };
+
+            function scrollTo (target) {
+                var i,
+                    startY = currentYPosition(),
+                    stopY = elmYPosition(target),
+                    distance = stopY > startY ? stopY - startY : startY - stopY;
+                if (distance < 100) {
+                    window.scrollTo(0, stopY);
+                    return;
+                }
+                var speed = Math.round(distance),
+                    step = Math.round(distance / 25),
+                    y = startY;
+                _nextScroll(startY, speed, step, stopY);
+            }
+
+            function _nextScroll (y, speed, stepY, stopY) {
+                var more = true,
+                    y2, d;
+                if (y < stopY) {
+                    y2 = y + stepY;
+                    if (y2 >= stopY) {
+                        more = false;
+                        y2 = stopY;
+                    }
+                    d = y2 - y;
+                } else {
+                    y2 = y - stepY;
+                    if (y2 <= stopY) {
+                        more = false;
+                        y2 = stopY;
+                    }
+                    d = y - y2;
+                }
+                var delay = 1000*d/speed;
+                $timeout(function () {
+                    window.scrollTo(0, y2);
+                    if (more)
+                        _nextScroll(y2, speed, stepY, stopY);
+                }, delay);
+            }
+
+            function currentYPosition() {
+                // Firefox, Chrome, Opera, Safari
+                if (window.pageYOffset) {
+                    return window.pageYOffset;
+                }
+                // Internet Explorer 6 - standards mode
+                if (document.documentElement && document.documentElement.scrollTop) {
+                    return document.documentElement.scrollTop;
+                }
+                // Internet Explorer 6, 7 and 8
+                if (document.body.scrollTop) {
+                    return document.body.scrollTop;
+                }
+                return 0;
+            }
+
+            /* scrollTo -
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+            function elmYPosition(node) {
+                var y = node.offsetTop;
+                while (node.offsetParent && node.offsetParent != document.body) {
+                    node = node.offsetParent;
+                    y += node.offsetTop;
+                }
+                return y;
+            }
+
         }]);
     //
     function wrapPromise (promise) {
@@ -1254,7 +1317,7 @@ angular.module("lux/blog/pagination.tpl.html", []).run(["$templateCache", functi
     // Load d3 extensions into angular 'd3viz' module
     //  d3ext is the d3 extension object
     //  name is the optional module name for angular (default to d3viz)
-    lux.addD3ext = function (d3ext, name) {
+    lux.addD3ext = function (d3, name) {
 
         function loadData ($lux) {
 
@@ -1272,7 +1335,7 @@ angular.module("lux/blog/pagination.tpl.html", []).run(["$templateCache", functi
                         });
                     }
                 } else if (src) {
-                    this.d3.json(src, function(error, json) {
+                    d3.json(src, function(error, json) {
                         if (!error) {
                             self.setData(json, callback);
                             return self.attrs.data;
@@ -1302,9 +1365,9 @@ angular.module("lux/blog/pagination.tpl.html", []).run(["$templateCache", functi
         name = name || 'd3viz';
         var app = angular.module(name, ['lux.services']);
 
-        angular.forEach(d3ext, function (VizClass, name) {
+        angular.forEach(d3.ext, function (VizClass, name) {
 
-            if (d3ext.isviz(VizClass)) {
+            if (d3.ext.isviz(VizClass)) {
                 var dname = 'viz' + name.substring(0,1).toUpperCase() + name.substring(1);
 
                 app.directive(dname, ['$lux', function ($lux) {
@@ -1314,12 +1377,10 @@ angular.module("lux/blog/pagination.tpl.html", []).run(["$templateCache", functi
                             restrict: 'AE',
                             //
                             link: function (scope, element, attrs) {
-                                require(['d3'], function (d3) {
-                                    var options = getOptions(d3, attrs);
-                                    var viz = new VizClass(element, options);
-                                    viz.loadData = loadData($lux);
-                                    viz.build();
-                                });
+                                var options = getOptions(d3, attrs);
+                                var viz = new VizClass(element[0], options);
+                                viz.loadData = loadData($lux);
+                                viz.build();
                             }
                         };
                 }]);

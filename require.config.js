@@ -24,10 +24,7 @@ var require = (function (require) {
         "jquery": "//code.jquery.com/jquery-1.11.1",
         "leaflet": "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js",
         "marked": "//cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked",
-        "mathjax": {
-            "url": "//cdn.mathjax.org/mathjax/latest/MathJax.js",
-            "urlparams": "config=TeX-AMS-MML_HTMLorMML"
-        },
+        "mathjax": "//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML",
         "mustache": "//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache",
         "ui-router": "//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router",
         "ui-grid": "http://ui-grid.info/release/ui-grid-unstable",
@@ -80,16 +77,25 @@ var require = (function (require) {
         }
     };
 
+    // Add paths in require object
+    if (require.paths) {
+        for(var name in require.paths) {
+            if(require.paths.hasOwnProperty(name))
+                libs[name] = require.paths[name];
+        }
+    }
+
     function _minify () {
         var all = {};
         for(var name in libs) {
             if(libs.hasOwnProperty(name)) {
                 var path = libs[name],
-                    params;
-                if (typeof path !== 'string') {
-                    params = path.params;
-                    path = path.url;
-                }
+                    params = path.split('?');
+                if (params.length === 2) {
+                    path = params[0];
+                    params = params[1];
+                } else
+                    params = '';
                 if (path.substring(path.length-3) !== end)
                     path += min;
                 if (params) {

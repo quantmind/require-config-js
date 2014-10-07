@@ -6,15 +6,15 @@
 <meta content='IE=edge' http-equiv='X-UA-Compatible'>
 <meta content='width=device-width, initial-scale=1' name='viewport'>
 <meta content='Configuration script for requirejs' name='description'>
-<meta content='2014-10-06T10:11:54' name='og:modified_time'>
+<meta content='2014-10-07T09:37:24' name='og:modified_time'>
 <link href='http://quantmind.com/media/quantmind/favicon.ico.min.css' rel='icon' type='image/x-icon'>
 <link href='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
 <link href='http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
 <link href='require.config.css' rel='stylesheet' type='text/css'>
 <script type='text/javascript'>
-var luxContext = {"python_version": "3.4.1", "name": "Lux", "year": 2014, "page": {"name": "index", "modified": "2014-10-06T10:11:54", "slug": "index", "content_type": "text/html"}, "url": "", "dateFormat": "d MMM y", "lux_version": "0.1.0-alpha.1", "datetimeFormat": "d MMM y, h:mm:ss a", "ngModules": [], "navbarCollapseWidth": 768, "date": "2014-10-06T10-14-38", "media": ""};</script>
+var luxContext = {"name": "Lux", "python_version": "3.4.1", "ngModules": [], "url": "", "page": {"name": "index", "modified": "2014-10-07T09:37:24", "content_type": "text/html", "slug": "index"}, "lux_version": "0.1.0-alpha.1", "year": 2014, "dateFormat": "d MMM y", "navbarCollapseWidth": 768, "media": "", "datetimeFormat": "d MMM y, h:mm:ss a", "date": "2014-10-07T09-38-19"};</script>
 <script type="text/javascript">
-var require = {"minify": true, "waitSeconds": 200, "deps": [], "baseUrl": ""};
+var require = {"minify": true, "waitSeconds": 200, "deps": [], "paths": {}, "baseUrl": ""};
 </script>
 <script src='require.config.min.js' type='application/javascript'></script>
 <script src='http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.min.js' type='application/javascript'></script>
@@ -24,6 +24,8 @@ var require = {"minify": true, "waitSeconds": 200, "deps": [], "baseUrl": ""};
     <div class='row'>
         <div class='col-sm-12' data-highlight data-ng-cloak>
             <h1 id="configuration-script-for-requirejs">Configuration script for requirejs</h1>
+<p>This script can be used in conjunction with <a href="http://requirejs.org/" title="Require JS">requirejs</a> to setup
+ suitable <a href="http://requirejs.org/docs/api.html#config">configuration options</a>.</p>
 <ul>
 <li><a href="require.config.js">require.config.js</a></li>
 <li><a href="require.config.min.js">require.config.min.js</a></li>
@@ -35,6 +37,8 @@ var require = {minify: true};
 &lt;script src='http://quantmind.github.io/require-config-js/require.config.min.js'&gt;&lt;/script&gt;
 &lt;script src='http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.min.js'&gt;&lt;/script&gt;
 </code></pre>
+<p>The <code>require</code> variable can be used to add additional paths and dependencies to the require config object.
+If <code>minify</code> is <code>true</code>, the script will include in the <code>paths</code> array the url of minified libraries if possible.</p>
 <p>By <a href="http://quantmind.com">Quantmind</a></p>
 <p><a href='https://github.com/quantmind/require-config-js'>
 <i class='fa fa-github fa-5x'></i></a></p>

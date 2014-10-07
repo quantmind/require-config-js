@@ -1,4 +1,5 @@
 .DS_Store
 .pydevproject
 .project
+*.log
 node_modules
