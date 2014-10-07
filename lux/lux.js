@@ -1,6 +1,6 @@
 //      Lux Library - v0.1.0
 
-//      Compiled 2014-10-06.
+//      Compiled 2014-10-07.
 //      Copyright (c) 2014 - Luca Sbardella
 //      Licensed BSD.
 //      For all details and documentation:
@@ -922,7 +922,7 @@ function(angular, root) {
                     };
                 };
 
-            $locationProvider.html5Mode(lux.context.html5mode);
+            //$locationProvider.html5Mode(lux.context.html5mode);
 
             forEach(hrefs, function (href) {
                 var page = pages[href];
@@ -973,9 +973,9 @@ function(angular, root) {
             forEach(lux.context.ngModules, function (module) {
                 modules.push(module);
             });
-            angular.module(name, modules);
+            var mod = angular.module(name, modules);
             if (lux.context.html5mode && configRouter)
-                configRouter(module);
+                configRouter(mod);
             angular.bootstrap(document, [name]);
             //
             forEach(ready_callbacks, function (callback) {
