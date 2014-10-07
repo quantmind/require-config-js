@@ -91,10 +91,10 @@ var require = (function (r) {
             for(var name in libs) {
                 if(libs.hasOwnProperty(name)) {
                     var path = libs[name];
-                    if (typeof(path) !== 'string')
+                    if (typeof(path) !== 'string') {
                         // Don't maanipulate it, live it as it is
                         path = path.url;
-                    else {
+                    } else {
                         var params = path.split('?');
                         if (params.length === 2) {
                             path = params[0];

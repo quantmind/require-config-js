@@ -6,15 +6,15 @@
 <meta content='IE=edge' http-equiv='X-UA-Compatible'>
 <meta content='width=device-width, initial-scale=1' name='viewport'>
 <meta content='Configuration script for requirejs' name='description'>
-<meta content='2014-10-07T09:37:24' name='og:modified_time'>
+<meta content='2014-10-07T10:32:40' name='og:modified_time'>
 <link href='http://quantmind.com/media/quantmind/favicon.ico.css' rel='icon' type='image/x-icon'>
 <link href='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.css' rel='stylesheet' type='text/css'>
 <link href='http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css' rel='stylesheet' type='text/css'>
 <link href='require.config.css' rel='stylesheet' type='text/css'>
 <script type='text/javascript'>
-var luxContext = {"media": "", "date": "2014-10-07T10-21-25", "dateFormat": "d MMM y", "datetimeFormat": "d MMM y, h:mm:ss a", "name": "Lux", "navbarCollapseWidth": 768, "year": 2014, "url": "", "page": {"modified": "2014-10-07T09:37:24", "content_type": "text/html", "name": "index", "slug": "index"}, "python_version": "3.4.1", "ngModules": [], "lux_version": "0.1.0-alpha.1"};</script>
+var luxContext = {"python_version": "3.4.1", "dateFormat": "d MMM y", "page": {"modified": "2014-10-07T10:32:40", "content_type": "text/html", "slug": "index", "name": "index"}, "date": "2014-10-07T10-32-44", "datetimeFormat": "d MMM y, h:mm:ss a", "name": "Lux", "ngModules": [], "year": 2014, "url": "", "lux_version": "0.1.0-alpha.1", "navbarCollapseWidth": 768, "media": ""};</script>
 <script type="text/javascript">
-var require = {"deps": [], "baseUrl": "", "minify": false, "waitSeconds": 200, "paths": {}};
+var require = {"paths": {}, "minify": false, "baseUrl": "", "deps": [], "waitSeconds": 200};
 </script>
 <script src='require.config.js' type='application/javascript'></script>
 <script src='http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.js' type='application/javascript'></script>
@@ -30,7 +30,14 @@ var require = {"deps": [], "baseUrl": "", "minify": false, "waitSeconds": 200, "
 <li><a href="require.config.js">require.config.js</a></li>
 <li><a href="require.config.min.js">require.config.min.js</a></li>
 </ul>
-<p>Usage:</p>
+<p>By <a href="http://quantmind.com">Quantmind</a></p>
+<p><a href='https://github.com/quantmind/require-config-js'>
+<i class='fa fa-github fa-5x'></i></a></p>
+<p><a href="https://travis-ci.org/quantmind/require-config-js">
+<img alt="Build Status" src="https://travis-ci.org/quantmind/require-config-js.svg?branch=gh-pages" style="max-width:100%;">
+</a></p>
+<h2 id="usage">Usage</h2>
+<p>Add a <code>require</code> variable before importing the script and <code>requirejs</code>:</p>
 <pre><code>&lt;script&gt;
 var require = {minify: true};
 &lt;/script&gt;
@@ -39,12 +46,27 @@ var require = {minify: true};
 </code></pre>
 <p>The <code>require</code> variable can be used to add additional paths and dependencies to the require config object.
 If <code>minify</code> is <code>true</code>, the script will include in the <code>paths</code> array the url of minified libraries if possible.</p>
-<p>By <a href="http://quantmind.com">Quantmind</a></p>
-<p><a href='https://github.com/quantmind/require-config-js'>
-<i class='fa fa-github fa-5x'></i></a></p>
-<p><a href="https://travis-ci.org/quantmind/require-config-js">
-<img alt="Build Status" src="https://travis-ci.org/quantmind/require-config-js.svg?branch=gh-pages" style="max-width:100%;">
-</a></p>
+<pre><code>var require = {
+    minify: true,
+    paths: {
+        "angular": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular",
+        "leaflet": "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js",
+        'google-map': {"url": "https://maps.googleapis.com/maps/api/js?v=3.exp&amp;key=&amp;sensor=false"}
+    }
+}
+</code></pre>
+<p>In this case <code>angular</code> url will be the minified one while both <code>leaflet</code> (ending with <code>.js</code>)
+and <code>google-map</code> (an object with <code>url</code> entry) are left unmodified. The require config object
+created by the script should look like this</p>
+<pre><code>require = {
+    paths: {
+        "angular": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min",
+        "leaflet": "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js",
+        'google-map': "https://maps.googleapis.com/maps/api/js?v=3.exp&amp;key=&amp;sensor=false",
+        ...
+    }
+}
+</code></pre>
         </div>
     </div>
 </div>
