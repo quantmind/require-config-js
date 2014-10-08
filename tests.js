@@ -22,4 +22,12 @@
             expect(r.minify).toBe(true);
             expect(r.paths.test1).toBe('this_should_not_be_processsed');
         });
+
+        it("Test angular shim", function () {
+            var shim = require.shim;
+            expect(typeof(shim)).toBe('object');
+            expect(typeof(shim["angular-ui-router"])).toBe('object');
+            expect(shim["angular-ui-router"].deps.length).toBe(1);
+            expect(shim["angular-ui-router"].deps[0]).toBe("angular");
+        });
     });

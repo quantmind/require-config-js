@@ -14,6 +14,9 @@ var require = (function (r) {
             "angular-mocks": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular-mocks",
             "angular-route": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular-route",
             "angular-sanitize": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular-sanitize",
+            "angular-strap": "//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.1.1/angular-strap",
+            "angular-ui-router": "//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router",
+            "angular-ui-grid": "http://ui-grid.info/release/ui-grid-unstable",
             "aws": "//sdk.amazonaws.com/js/aws-sdk-2.0.0-rc13",
             "bootstrap": "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap",
             "codemirror": "//cdnjs.cloudflare.com/ajax/libs/codemirror/3.21.0/codemirror",
@@ -27,12 +30,8 @@ var require = (function (r) {
             "marked": "//cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked",
             "mathjax": "//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML",
             "mustache": "//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache",
-            "ui-router": "//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router",
-            "ui-grid": "http://ui-grid.info/release/ui-grid-unstable",
-            "require": "//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require",
             "restangular": "//cdnjs.cloudflare.com/ajax/libs/restangular/1.4.0/restangular",
             "select": "//cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2",
-            "showdown": "//cdnjs.cloudflare.com/ajax/libs/showdown/0.3.1/showdown.min.js",
             "sockjs": "//cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs",
             "typeahead": "//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.9.2/typeahead",
             "topojson": "//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js",
@@ -61,19 +60,10 @@ var require = (function (r) {
             bootstrap: {
                 deps: ["jquery"]
             },
-            "angular-route": {
-                deps: ["angular"]
-            },
-            "angular-sanitize": {
-                deps: ["angular"]
-            },
-            "ui-grid": {
-                "deps": ["angular"]
-            },
-            "ui-router": {
-                "deps": ["angular"]
-            },
             nvd3: {
+                deps: ["d3"]
+            },
+            c3: {
                 deps: ["d3"]
             }
         };
@@ -91,6 +81,12 @@ var require = (function (r) {
             for(var name in libs) {
                 if(libs.hasOwnProperty(name)) {
                     var path = libs[name];
+                    // Add angular dependency
+                    if (name.substring(0, 8) === "angular-" && !shim[name]) {
+                        shim[name] = {
+                            deps: ["angular"]
+                        };
+                    }
                     if (typeof(path) !== 'string') {
                         // Don't maanipulate it, live it as it is
                         path = path.url;
