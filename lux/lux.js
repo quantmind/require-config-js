@@ -1,25 +1,24 @@
 //      Lux Library - v0.1.0
 
-//      Compiled 2014-10-07.
+//      Compiled 2014-10-10.
 //      Copyright (c) 2014 - Luca Sbardella
 //      Licensed BSD.
 //      For all details and documentation:
 //      http://quantmind.github.io/lux
 //
 (function (factory) {
-    var root;
+    var root = this;
     if (typeof module === "object" && module.exports)
         root = module.exports;
-    else
-        root = window;
     //
     if (typeof define === 'function' && define.amd) {
         // Support AMD. Register as an anonymous module.
         // NOTE: List all dependencies in AMD style
         define(['angular'], function (angular) {
-            return factory(angular, root);
+            root.lux = factory(angular, root);
+            return root.lux;
         });
-    } else if (typeof module === "object" && module.exports) {
+    } else {
         // No AMD. Set module as a global variable
         // NOTE: Pass dependencies to factory function
         // (assume that angular is also global.)
@@ -48,23 +47,55 @@ function(angular, root) {
         else ready_callbacks.push(callback);
     };
 
+    // Extend lux context with additional data
+    lux.extend = function (context) {
+        lux.context = extend(lux.context, context);
+        return lux;
+    };
+
+    var generateResize = function () {
+        var resizeFunctions = [],
+            callResizeFunctions = function () {
+                resizeFunctions.forEach(function (f) {
+                    f();
+                });
+            };
+        //
+        callResizeFunctions.add = function (f) {
+            resizeFunctions.push(f);
+        };
+        return callResizeFunctions;
+    };
+
     //
     //  Utilities
     //
     var windowResize = lux.windowResize = function (callback, delay) {
         var handle;
-        delay = delay ? +delay : 500;
+        delay = delay ? +delay : 0;
 
         function execute () {
             handle = null;
             callback();
         }
 
-        $(window).resize(function() {
-            if (!handle) {
-                handle = setTimeout(execute, delay);
+        if (window.onresize === null) {
+            window.onresize = generateResize();
+        }
+        if (window.onresize.add) {
+            if (delay) {
+                window.onresize.add(function (e) {
+                    if (!handle)
+                        handle = setTimeout(execute, delay);
+                });
+            } else {
+                window.onresize.add(callback);
             }
-        });
+        }
+    };
+
+    var windowHeight = lux.windowHeight = function () {
+        return window.innerHeight > 0 ? window.innerHeight : screen.availHeight;
     };
 
     var isAbsolute = new RegExp('^([a-z]+://|//)');
@@ -236,93 +267,6 @@ function(angular, root) {
                 else
                     return new Api(context.name, context.url, context.options, $lux);
             };
-            //
-            //  ScrollToHash
-            this.scrollToHash = function (hash, offset) {
-                var e;
-                if (hash.currentTarget) {
-                    e = hash;
-                    hash = hash.currentTarget.hash;
-                }
-                // set the location.hash to the id of
-                // the element you wish to scroll to.
-                var target = document.getElementById(hash.substring(1));
-                if (target) {
-                    $lux.location.hash(hash);
-                    $lux.log.info('Scrolling to target');
-                    scrollTo(target);
-                } else
-                    $lux.log.warning('Cannot scroll, target not found');
-            };
-
-            function scrollTo (target) {
-                var i,
-                    startY = currentYPosition(),
-                    stopY = elmYPosition(target),
-                    distance = stopY > startY ? stopY - startY : startY - stopY;
-                if (distance < 100) {
-                    window.scrollTo(0, stopY);
-                    return;
-                }
-                var speed = Math.round(distance),
-                    step = Math.round(distance / 25),
-                    y = startY;
-                _nextScroll(startY, speed, step, stopY);
-            }
-
-            function _nextScroll (y, speed, stepY, stopY) {
-                var more = true,
-                    y2, d;
-                if (y < stopY) {
-                    y2 = y + stepY;
-                    if (y2 >= stopY) {
-                        more = false;
-                        y2 = stopY;
-                    }
-                    d = y2 - y;
-                } else {
-                    y2 = y - stepY;
-                    if (y2 <= stopY) {
-                        more = false;
-                        y2 = stopY;
-                    }
-                    d = y - y2;
-                }
-                var delay = 1000*d/speed;
-                $timeout(function () {
-                    window.scrollTo(0, y2);
-                    if (more)
-                        _nextScroll(y2, speed, stepY, stopY);
-                }, delay);
-            }
-
-            function currentYPosition() {
-                // Firefox, Chrome, Opera, Safari
-                if (window.pageYOffset) {
-                    return window.pageYOffset;
-                }
-                // Internet Explorer 6 - standards mode
-                if (document.documentElement && document.documentElement.scrollTop) {
-                    return document.documentElement.scrollTop;
-                }
-                // Internet Explorer 6, 7 and 8
-                if (document.body.scrollTop) {
-                    return document.body.scrollTop;
-                }
-                return 0;
-            }
-
-            /* scrollTo -
-            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-            function elmYPosition(node) {
-                var y = node.offsetTop;
-                while (node.offsetParent && node.offsetParent != document.body) {
-                    node = node.offsetParent;
-                    y += node.offsetTop;
-                }
-                return y;
-            }
-
         }]);
     //
     function wrapPromise (promise) {
@@ -403,14 +347,14 @@ function(angular, root) {
                 request = {
                     deferred: d,
                     //
-                    options: $.extend({'method': method, 'data': data}, opts),
+                    options: extend({'method': method, 'data': data}, opts),
                     //
                     'urlparams': urlparams,
                     //
                     api: this,
                     //
                     error: function (data, status, headers) {
-                        if ($.isString(data)) {
+                        if (isString(data)) {
                             data = {error: true, message: data};
                         }
                         d.reject({
@@ -548,6 +492,97 @@ function(angular, root) {
             }
         }
     });
+
+    angular.module('lux.scroll', [])
+        .service('scroll', ['$location', '$log', '$timeout', function ($location, $log, $timeout) {
+            //
+            //  ScrollToHash
+            this.toHash = function (hash, offset) {
+                var e;
+                if (hash.currentTarget) {
+                    e = hash;
+                    hash = hash.currentTarget.hash;
+                }
+                // set the location.hash to the id of
+                // the element you wish to scroll to.
+                var target = document.getElementById(hash.substring(1));
+                if (target) {
+                    $location.hash(hash);
+                    $log.info('Scrolling to target');
+                    scrollTo(target);
+                } else
+                    $lux.log.warning('Cannot scroll, target not found');
+            };
+
+            function scrollTo (target) {
+                var i,
+                    startY = currentYPosition(),
+                    stopY = elmYPosition(target),
+                    distance = stopY > startY ? stopY - startY : startY - stopY;
+                if (distance < 100) {
+                    window.scrollTo(0, stopY);
+                    return;
+                }
+                var speed = Math.round(distance),
+                    step = Math.round(distance / 25),
+                    y = startY;
+                _nextScroll(startY, speed, step, stopY);
+            }
+
+            function _nextScroll (y, speed, stepY, stopY) {
+                var more = true,
+                    y2, d;
+                if (y < stopY) {
+                    y2 = y + stepY;
+                    if (y2 >= stopY) {
+                        more = false;
+                        y2 = stopY;
+                    }
+                    d = y2 - y;
+                } else {
+                    y2 = y - stepY;
+                    if (y2 <= stopY) {
+                        more = false;
+                        y2 = stopY;
+                    }
+                    d = y - y2;
+                }
+                var delay = 1000*d/speed;
+                $timeout(function () {
+                    window.scrollTo(0, y2);
+                    if (more)
+                        _nextScroll(y2, speed, stepY, stopY);
+                }, delay);
+            }
+
+            function currentYPosition() {
+                // Firefox, Chrome, Opera, Safari
+                if (window.pageYOffset) {
+                    return window.pageYOffset;
+                }
+                // Internet Explorer 6 - standards mode
+                if (document.documentElement && document.documentElement.scrollTop) {
+                    return document.documentElement.scrollTop;
+                }
+                // Internet Explorer 6, 7 and 8
+                if (document.body.scrollTop) {
+                    return document.body.scrollTop;
+                }
+                return 0;
+            }
+
+            /* scrollTo -
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+            function elmYPosition(node) {
+                var y = node.offsetTop;
+                while (node.offsetParent && node.offsetParent != document.body) {
+                    node = node.offsetParent;
+                    y += node.offsetTop;
+                }
+                return y;
+            }
+
+        }]);
     //
     //  Lux Static JSON API
     //  ------------------------
@@ -808,13 +843,6 @@ function(angular, root) {
                 page = $scope.pages ? $scope.pages[page] : null;
             $scope.page = addPageInfo(page || {}, $scope, dateFilter, $lux);
             //
-            $scope.windowHeight = function () {
-                return root.window.innerHeight > 0 ? root.window.innerHeight : root.screen.availHeight;
-            };
-
-            $scope.search_text = '';
-            $scope.sidebarCollapse = '';
-            //
             // logout via post method
             $scope.logout = function(e, url) {
                 e.preventDefault();
@@ -823,13 +851,6 @@ function(angular, root) {
                     if (data.redirect)
                         window.location.replace(data.redirect);
                 });
-            };
-            //
-            // Search
-            $scope.search = function () {
-                if ($scope.search_text) {
-                    window.location.href = '/search?' + $.param({q: $scope.search_text});
-                }
             };
 
             // Dismiss a message
@@ -846,20 +867,6 @@ function(angular, root) {
             $scope.loadPage = function ($event) {
                 $scope.page = this.link;
             };
-
-            $scope.collapse = function () {
-                var width = root.window.innerWidth > 0 ? root.window.innerWidth : root.screen.width;
-                if (width < $scope.navbarCollapseWidth)
-                    $scope.sidebarCollapse = 'collapse';
-                else
-                    $scope.sidebarCollapse = '';
-            };
-
-            $scope.collapse();
-            $(root).bind("resize", function () {
-                $scope.collapse();
-                $scope.$apply();
-            });
 
             $scope.activeLink = function (url) {
                 var loc;
@@ -883,8 +890,8 @@ function(angular, root) {
     //  Configure ui-Router using lux routing objects
     //  Only when context.html5mode is true
     //  Python implementation in the lux.extensions.angular Extension
-    function configRouter(module) {
-        module.config(['$locationProvider', '$stateProvider', '$urlRouterProvider',
+    function configRouter(mod) {
+        mod.config(['$locationProvider', '$stateProvider', '$urlRouterProvider',
             function ($locationProvider, $stateProvider, $urlRouterProvider) {
 
             var hrefs = lux.context.hrefs,
@@ -922,7 +929,7 @@ function(angular, root) {
                     };
                 };
 
-            //$locationProvider.html5Mode(lux.context.html5mode);
+            $locationProvider.html5Mode(lux.context.html5mode);
 
             forEach(hrefs, function (href) {
                 var page = pages[href];
@@ -970,8 +977,8 @@ function(angular, root) {
                 modules = [];
             modules.push('lux');
             // Add all modules from context
-            forEach(lux.context.ngModules, function (module) {
-                modules.push(module);
+            forEach(lux.context.ngModules, function (mod) {
+                modules.push(mod);
             });
             var mod = angular.module(name, modules);
             if (lux.context.html5mode && configRouter)
@@ -1028,8 +1035,8 @@ angular.module("lux/blog/pagination.tpl.html", []).run(["$templateCache", functi
     //  ===============
     //
     //  Simple blog pagination directives and code highlight with highlight.js
-    angular.module('lux.blog', ['templates-blog', 'lux.services', 'highlight'])
-        .controller('BlogEntry', ['$scope', 'dateFilter', '$lux', function ($scope, dateFilter, $lux) {
+    angular.module('lux.blog', ['templates-blog', 'lux.services', 'highlight', 'lux.scroll'])
+        .controller('BlogEntry', ['$scope', 'dateFilter', '$lux', 'scroll', function ($scope, dateFilter, $lux, scroll) {
             var post = $scope.post;
             if (!post) {
                 $lux.log.error('post not available in $scope, cannot use pagination controller!');
@@ -1057,7 +1064,7 @@ angular.module("lux/blog/pagination.tpl.html", []).run(["$templateCache", functi
                         el = $(el);
                         var href = el.attr('href');
                         if (href.substring(0, 1) === '#' && href.substring(0, 2) !== '##')
-                            el.on('click', $lux.scrollToHash);
+                            el.on('click', scroll.toHash);
                     });
                 }
             };
@@ -1091,6 +1098,132 @@ angular.module("lux/blog/pagination.tpl.html", []).run(["$templateCache", functi
             });
         });
     };
+angular.module('templates-nav', ['lux/nav/navbar2.tpl.html']);
+
+angular.module("lux/nav/navbar2.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("lux/nav/navbar2.tpl.html",
+    "<nav class=\"navbar navbar-{{navbar.themeTop}} navbar-fixed-top\" role=\"navigation\" ng-model=\"navbar.collapse\" bs-collapse>\n" +
+    "    <div class=\"navbar-header\">\n" +
+    "        <button type=\"button\" class=\"navbar-toggle\" bs-collapse-toggle>\n" +
+    "            <span class=\"sr-only\">Toggle navigation</span>\n" +
+    "            <span class=\"icon-bar\"></span>\n" +
+    "            <span class=\"icon-bar\"></span>\n" +
+    "            <span class=\"icon-bar\"></span>\n" +
+    "        </button>\n" +
+    "        <a href=\"/\" class=\"navbar-brand\" target=\"_self\">{{navbar.brand}}</a>\n" +
+    "    </div>\n" +
+    "    <ul class=\"nav navbar-top-links navbar-right\">\n" +
+    "        <li ng-repeat=\"item in navbar.items\">\n" +
+    "            <a href=\"{{item.href}}\" target=\"{{item.target}}\" title=\"{{item.title || item.value}}\">\n" +
+    "            <i ng-if=\"item.icon\" class=\"{{item.icon}}\"></i>{{item.value}}</a>\n" +
+    "        </li>\n" +
+    "    </ul>\n" +
+    "    <div class=\"navbar sidebar\" role=\"navigation\">\n" +
+    "        <div class=\"sidebar-collapse\" bs-collapse-target>\n" +
+    "            <ul id=\"side-menu\" class=\"nav nav-side\">\n" +
+    "                <li ng-if=\"navbar.search\" class=\"sidebar-search\">\n" +
+    "                    <div class=\"input-group custom-search-form\">\n" +
+    "                        <input class=\"form-control\" type=\"text\" placeholder=\"Search...\">\n" +
+    "                        <span class=\"input-group-btn\">\n" +
+    "                            <button class=\"btn btn-default\" type=\"button\" ng-click=\"search()\">\n" +
+    "                                <i class=\"fa fa-search\"></i>\n" +
+    "                            </button>\n" +
+    "                        </span>\n" +
+    "                    </div>\n" +
+    "                </li>\n" +
+    "                <li ng-repeat=\"link in navbar.items2\">\n" +
+    "                    <a ng-if=\"!link.links\" href=\"{{link.href}}\">{{link.name || link.href}}</a>\n" +
+    "                    <a ng-if=\"link.links\" href=\"{{link.href}}\" class=\"with-children\">{{link.name}}</a>\n" +
+    "                    <a ng-if=\"link.links\" href=\"#\" class=\"pull-right toggle\" ng-click=\"togglePage($event)\">\n" +
+    "                        <i class=\"fa\" ng-class=\"{'fa-chevron-left': !link.active, 'fa-chevron-down': link.active}\"></i></a>\n" +
+    "                    <ul ng-if=\"link.links\" class=\"nav nav-second-level collapse\" ng-class=\"{in: link.active}\">\n" +
+    "                        <li ng-repeat=\"link in link.links\">\n" +
+    "                            <a ng-if=\"!link.vars\" href=\"{{link.href}}\" ng-click=\"loadPage($event)\">{{link.name}}</a>\n" +
+    "                        </li>\n" +
+    "                    </ul>\n" +
+    "                </li>\n" +
+    "            </ul>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</nav>");
+}]);
+
+
+    //
+    //  Lux Navigation module
+    //
+    //  * Requires "angular-strap" for the collapsable directives
+    //
+    //  Include this module to render bootstrap navigation templates
+    //  The navigation should be available as the ``navbar`` object within
+    //  the ``luxContext`` object:
+    //
+    //      luxContext.navbar = {
+    //          items: [{href="/", value="Home"}]
+    //      };
+    //
+    var navBarDefaults = {
+        collapseWidth: 768,
+        theme: 'default',
+        search_text: '',
+        collapse: '',
+        search: false
+    };
+
+    angular.module('lux.nav', ['templates-nav', 'lux.services', 'mgcrea.ngStrap.collapse'])
+        .controller('Navigation', ['$scope', '$lux', function ($scope, $lux) {
+            $lux.log.info('Setting up navigation on page');
+            //
+            var navbar = $scope.navbar = angular.extend({}, navBarDefaults, $scope.navbar),
+                maybeCollapse = function () {
+                    var width = window.innerWidth > 0 ? window.innerWidth : screen.width,
+                        c = navbar.collapse;
+                    if (width < navbar.collapseWidth)
+                        navbar.collapse = 'collapse';
+                    else
+                        navbar.collapse = '';
+                    return c !== navbar.collapse;
+                };
+            if (!navbar.themeTop)
+                navbar.themeTop = navbar.theme;
+
+            maybeCollapse();
+            //
+            windowResize(function () {
+                if (maybeCollapse())
+                    $scope.$apply();
+            });
+            //
+            // Search
+            $scope.search = function () {
+                if (scope.search_text) {
+                    window.location.href = '/search?' + $.param({q: $scope.search_text});
+                }
+            };
+
+        }])
+    //
+    //  Directive for the navbar with sidebar (nivebar2 template)
+    .directive('navbar2', function () {
+        return {
+            templateUrl: "lux/nav/navbar2.tpl.html",
+            restrict: 'AE'
+        };
+    })
+    //
+    // Directive for the main page in the sidebar2 template
+    .directive('navbar2Page', function () {
+        return {
+            compile: function () {
+                return {
+                    pre: function (scope, element, attrs) {
+                        element.addClass('navbar2-page');
+                        attrs.$set('style', 'min-height: ' + windowHeight() + 'px');
+                    }
+                };
+            }
+        };
+    });
 
     // Controller for User
     angular.module('users', ['lux.services'])
@@ -1153,6 +1286,62 @@ angular.module("lux/blog/pagination.tpl.html", []).run(["$templateCache", functi
                 }
             };
         }]);
+
+    var
+    //
+    lorem_defaults = {
+        paragraphs: 3,
+        // number of words per paragraph
+        words: null,
+        ptags: true
+    },
+    //
+    lorem_text = [
+         "Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio urna, tempus molestie, porttitor ut, iaculis quis, sem. Phasellus rhoncus. Aenean id metus id velit ullamcorper pulvinar. Vestibulum fermentum tortor id mi. Pellentesque ipsum. Nulla non arcu lacinia neque faucibus fringilla. Nulla non lectus sed nisl molestie malesuada. Proin in tellus sit amet nibh dignissim sagittis. Vivamus luctus egestas leo. Maecenas sollicitudin. Nullam rhoncus aliquam metus. Etiam egestas wisi a erat.",
+         "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam feugiat, turpis at pulvinar vulputate, erat libero tristique tellus, nec bibendum odio risus sit amet ante. Aliquam erat volutpat. Nunc auctor. Mauris pretium quam et urna. Fusce nibh. Duis risus. Curabitur sagittis hendrerit ante. Aliquam erat volutpat. Vestibulum erat nulla, ullamcorper nec, rutrum non, nonummy ac, erat. Duis condimentum augue id magna semper rutrum. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Proin pede metus, vulputate nec, fermentum fringilla, vehicula vitae, justo. Fusce consectetuer risus a nunc. Aliquam ornare wisi eu metus. Integer pellentesque quam vel velit. Duis pulvinar.",
+         "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Morbi gravida libero nec velit. Morbi scelerisque luctus velit. Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Proin mattis lacinia justo. Vestibulum facilisis auctor urna. Aliquam in lorem sit amet leo accumsan lacinia. Integer rutrum, orci vestibulum ullamcorper ultricies, lacus quam ultricies odio, vitae placerat pede sem sit amet enim. Phasellus et lorem id felis nonummy placerat. Fusce dui leo, imperdiet in, aliquam sit amet, feugiat eu, orci. Aenean vel massa quis mauris vehicula lacinia. Quisque tincidunt scelerisque libero. Maecenas libero. Etiam dictum tincidunt diam. Donec ipsum massa, ullamcorper in, auctor et, scelerisque sed, est. Suspendisse nisl. Sed convallis magna eu sem. Cras pede libero, dapibus nec, pretium sit amet, tempor quis, urna.",
+         "Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est. Nulla turpis magna, cursus sit amet, suscipit a, interdum id, felis. Integer vulputate sem a nibh rutrum consequat. Maecenas lorem. Pellentesque pretium lectus id turpis. Etiam sapien elit, consequat eget, tristique non, venenatis quis, ante. Fusce wisi. Phasellus faucibus molestie nisl. Fusce eget urna. Curabitur vitae diam non enim vestibulum interdum. Nulla quis diam. Ut tempus purus at lorem.",
+         "In sem justo, commodo ut, suscipit at, pharetra vitae, orci. Duis sapien nunc, commodo et, interdum suscipit, sollicitudin et, dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aliquam id dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Mauris dictum facilisis augue. Fusce tellus. Pellentesque arcu. Maecenas fermentum, sem in pharetra pellentesque, velit turpis volutpat ante, in pharetra metus odio a lectus. Sed elit dui, pellentesque a, faucibus vel, interdum nec, diam. Mauris dolor felis, sagittis at, luctus sed, aliquam non, tellus. Etiam ligula pede, sagittis quis, interdum ultricies, scelerisque eu, urna. Nullam at arcu a est sollicitudin euismod. Praesent dapibus. Duis bibendum, lectus ut viverra rhoncus, dolor nunc faucibus libero, eget facilisis enim ipsum id lacus. Nam sed tellus id magna elementum tincidunt.",
+         "Morbi a metus. Phasellus enim erat, vestibulum vel, aliquam a, posuere eu, velit. Nullam sapien sem, ornare ac, nonummy non, lobortis a, enim. Nunc tincidunt ante vitae massa. Duis ante orci, molestie vitae, vehicula venenatis, tincidunt ac, pede. Nulla accumsan, elit sit amet varius semper, nulla mauris mollis quam, tempor suscipit diam nulla vel leo. Etiam commodo dui eget wisi. Donec iaculis gravida nulla. Donec quis nibh at felis congue commodo. Etiam bibendum elit eget erat.",
+         "Praesent in mauris eu tortor porttitor accumsan. Mauris suscipit, ligula sit amet pharetra semper, nibh ante cursus purus, vel sagittis velit mauris vel metus. Aenean fermentum risus id tortor. Integer imperdiet lectus quis justo. Integer tempor. Vivamus ac urna vel leo pretium faucibus. Mauris elementum mauris vitae tortor. In dapibus augue non sapien. Aliquam ante. Curabitur bibendum justo non orci.",
+         "Morbi leo mi, nonummy eget, tristique non, rhoncus non, leo. Nullam faucibus mi quis velit. Integer in sapien. Fusce tellus odio, dapibus id, fermentum quis, suscipit id, erat. Fusce aliquam vestibulum ipsum. Aliquam erat volutpat. Pellentesque sapien. Cras elementum. Nulla pulvinar eleifend sem. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque porta. Vivamus porttitor turpis ac leo.",
+         "Maecenas ipsum velit, consectetuer eu, lobortis ut, dictum at, dui. In rutrum. Sed ac dolor sit amet purus malesuada congue. In laoreet, magna id viverra tincidunt, sem odio bibendum justo, vel imperdiet sapien wisi sed libero. Suspendisse sagittis ultrices augue. Mauris metus. Nunc dapibus tortor vel mi dapibus sollicitudin. Etiam posuere lacus quis dolor. Praesent id justo in neque elementum ultrices. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. In convallis. Fusce suscipit libero eget elit. Praesent vitae arcu tempor neque lacinia pretium. Morbi imperdiet, mauris ac auctor dictum, nisl ligula egestas nulla, et sollicitudin sem purus in lacus.",
+         "Aenean placerat. In vulputate urna eu arcu. Aliquam erat volutpat. Suspendisse potenti. Morbi mattis felis at nunc. Duis viverra diam non justo. In nisl. Nullam sit amet magna in magna gravida vehicula. Mauris tincidunt sem sed arcu. Nunc posuere. Nullam lectus justo, vulputate eget, mollis sed, tempor sed, magna. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam neque. Curabitur ligula sapien, pulvinar a, vestibulum quis, facilisis vel, sapien. Nullam eget nisl. Donec vitae arcu."
+    ];
+
+    angular.module('lux.lorem', [])
+        .directive('lorem', function () {
+            //
+            return {
+                restrict: 'AE',
+                //
+                link: function (scope, element, attrs) {
+                    var opts = extend({}, lorem_defaults, attrs),
+                        howmany = +opts.paragraphs,
+                        paragraphs = [],
+                        ipsum_text = "";
+                    //
+                    for (var i = 0; i < howmany; i++){
+                        paragraphs.push(lorem_text[Math.floor(Math.random()*lorem_text.length)]);
+                    }
+                    if (opts.words) {
+                        var numOfWords = +opts.words,
+                            oldparagraphs = paragraphs;
+                        paragraphs = [];
+                        oldparagraphs.forEach(function (paragraph) {
+                            var words = paragraph.split( ' ' ).splice(0, numOfWords);
+                            paragraphs.push(words.join(' '));
+                        });
+                    }
+                    paragraphs.forEach(function (paragraph) {
+                        if (opts.tags)
+                            element.append($('<p>'+paragraph+'</p>'));
+                        else
+                            element.append(paragraph+'\n\n');
+                    });
+                }
+            };
+        });
 
 
     //  Google Spreadsheet API
@@ -1386,6 +1575,8 @@ angular.module("lux/blog/pagination.tpl.html", []).run(["$templateCache", functi
                 }]);
             }
         });
+
+        return lux;
     };
 
 

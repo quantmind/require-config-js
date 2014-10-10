@@ -2,18 +2,18 @@ var require = (function (r) {
     "use strict";
     r = r || {};
     //
-    var processRequireConfig = r.processRequireConfig = function (require) {
+    var processRequireConfig = function (require) {
         var base = require.baseUrl || '',
             end = '.js',
             min = require.minify ? '.min' : '',
             protocol = window.location.protocol === 'file:' ? 'http:' : '';
 
         var libs = {
-            "angular": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular",
-            "angular-animate": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular-animate",
-            "angular-mocks": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular-mocks",
-            "angular-route": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular-route",
-            "angular-sanitize": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular-sanitize",
+            "angular": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular",
+            "angular-animate": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-animate",
+            "angular-mocks": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-mocks.js",
+            "angular-route": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route",
+            "angular-sanitize": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-sanitize",
             "angular-strap": "//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.1.1/angular-strap",
             "angular-ui-router": "//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router",
             "angular-ui-grid": "http://ui-grid.info/release/ui-grid-unstable",
@@ -22,7 +22,7 @@ var require = (function (r) {
             "codemirror": "//cdnjs.cloudflare.com/ajax/libs/codemirror/3.21.0/codemirror",
             "c3": "//cdnjs.cloudflare.com/ajax/libs/c3/0.3.0/c3",
             "d3": "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3",
-            "gridster": "//cdnjs.cloudflare.com/ajax/libs/jquery.gridster/0.2.1/jquery.gridster",
+            "gridster": "//cdnjs.cloudflare.com/ajax/libs/jquery.gridster/0.5.6/jquery.gridster",
             "holder": "//cdnjs.cloudflare.com/ajax/libs/holder/2.3.1/holder",
             "highlight": "//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js",
             "jquery": "//code.jquery.com/jquery-1.11.1",
@@ -33,12 +33,8 @@ var require = (function (r) {
             "restangular": "//cdnjs.cloudflare.com/ajax/libs/restangular/1.4.0/restangular",
             "select": "//cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2",
             "sockjs": "//cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs",
-            "typeahead": "//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.9.2/typeahead",
-            "topojson": "//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js",
-            //
-            // Local libraries
-            "lux": base + "lux/lux",
-            "d3ext": base + "d3ext/d3ext"
+            "typeahead": "//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle",
+            "topojson": "//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"
         },
         //
         shim = {
@@ -51,8 +47,14 @@ var require = (function (r) {
             "jquery-cookies": {
                 deps: ["jquery"]
             },
+            gridster: {
+                deps: ["jquery"]
+            },
             highlight: {
                 exports: "hljs"
+            },
+            restangular: {
+                deps: ["angular"]
             },
             select: {
                 deps: ["jquery"]
@@ -65,6 +67,9 @@ var require = (function (r) {
             },
             c3: {
                 deps: ["d3"]
+            },
+            typeahead: {
+                deps: ["jquery"]
             }
         };
 
@@ -133,6 +138,11 @@ var require = (function (r) {
         return require;
     };
 
-    return processRequireConfig(r);
+    var require = processRequireConfig(r);
+    if (require.testing) {
+        require.processRequireConfig = processRequireConfig;
+        this.require_config = require;
+    }
+    return require;
 
-}(require));
+}.call(this, require));

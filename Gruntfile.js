@@ -48,9 +48,10 @@ module.exports = function(grunt) {
         },
         jshint: {src: ['Gruntfile.js', target]},
         jasmine: {
-            src : target_min,
+            src : [],
             options : {
-                specs : 'tests.js'
+                specs : 'tests.js',
+                template: 'test.tpl.html'
             }
         }
     });
