@@ -7,17 +7,17 @@
 <meta content='width=device-width, initial-scale=1' name='viewport'>
 <meta content='Configuration script for requirejs' name='description'>
 <meta content='2014-10-07T10:32:40' name='og:modified_time'>
-<link href='http://quantmind.com/media/quantmind/favicon.ico.css' rel='icon' type='image/x-icon'>
-<link href='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.css' rel='stylesheet' type='text/css'>
-<link href='http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css' rel='stylesheet' type='text/css'>
+<link href='http://quantmind.com/media/quantmind/favicon.ico.min.css' rel='icon' type='image/x-icon'>
+<link href='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+<link href='http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
 <link href='require.config.css' rel='stylesheet' type='text/css'>
 <script type='text/javascript'>
-var luxContext = {"name": "Lux", "page": {"name": "index", "modified": "2014-10-07T10:32:40", "slug": "index", "content_type": "text/html"}, "ngModules": [], "media": "", "python_version": "3.4.1", "date": "2014-10-10T08-17-04", "url": "", "lux_version": "0.1.0-alpha.1", "datetimeFormat": "d MMM y, h:mm:ss a", "year": 2014, "dateFormat": "d MMM y"};</script>
+var luxContext = {"year": 2014, "url": "", "page": {"slug": "index", "modified": "2014-10-07T10:32:40", "name": "index", "content_type": "text/html"}, "media": "", "lux_version": "0.1.0-alpha.1", "python_version": "3.4.1", "name": "Lux", "date": "2014-10-10T09-27-53", "dateFormat": "d MMM y", "datetimeFormat": "d MMM y, h:mm:ss a", "ngModules": []};</script>
 <script type="text/javascript">
-var require = {"paths": {}, "deps": [], "waitSeconds": 200, "minify": false, "baseUrl": ""};
+var require = {"paths": {}, "deps": [], "minify": true, "baseUrl": "", "waitSeconds": 200};
 </script>
-<script src='require.config.js' type='application/javascript'></script>
-<script src='http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.js' type='application/javascript'></script>
+<script src='require.config.min.js' type='application/javascript'></script>
+<script src='http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.min.js' type='application/javascript'></script>
 </head>
 <body data-ng-controller='Page' data-ng-model='page'>
 <div class='container'>
@@ -71,7 +71,7 @@ created by the script should look like this</p>
     </div>
 </div>
 <script>
-require(['lux'], function (lux) {
+require(rcfg.min(['lux/lux']), function (lux) {
     lux.bootstrap('requireconfig', ['lux.blog']);
 });
 </script>

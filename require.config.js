@@ -1,14 +1,15 @@
 var require = (function (r) {
     "use strict";
     r = r || {};
+    var
+    end = '.js',
+    protocol = window.location.protocol === 'file:' ? 'http:' : '',
     //
-    var processRequireConfig = function (require) {
-        var base = require.baseUrl || '',
-            end = '.js',
-            min = require.minify ? '.min' : '',
-            protocol = window.location.protocol === 'file:' ? 'http:' : '';
-
-        var libs = {
+    process = function (cfg) {
+        var
+        base = cfg.baseUrl || '',
+        min = cfg.minify ? '.min' : '',
+        libs = {
             "angular": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular",
             "angular-animate": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-animate",
             "angular-mocks": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-mocks.js",
@@ -35,9 +36,9 @@ var require = (function (r) {
             "sockjs": "//cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs",
             "typeahead": "//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle",
             "topojson": "//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"
-        },
+        };
         //
-        shim = {
+        cfg.shim = {
             angular: {
                 exports: "angular"
             },
@@ -72,23 +73,36 @@ var require = (function (r) {
                 deps: ["jquery"]
             }
         };
+        //
+        cfg.min = function (deps) {
+            var all = [],
+                self = this,
+                min = this.minify ? '.min' : '';
+            if (deps)
+                deps.forEach(function (dep) {
+                    if (!self.paths[dep] && dep.substring(dep.length-3) !== end)
+                        dep += min;
+                    all.push(dep);
+                });
+            return all;
+        };
 
         // Add paths in require object
-        if (require.paths) {
-            for(var name in require.paths) {
-                if(require.paths.hasOwnProperty(name))
-                    libs[name] = require.paths[name];
+        if (cfg.paths) {
+            for(var name in cfg.paths) {
+                if(cfg.paths.hasOwnProperty(name))
+                    libs[name] = cfg.paths[name];
             }
         }
 
-        function _minify () {
+        cfg.paths = (function () {
             var all = {};
             for(var name in libs) {
                 if(libs.hasOwnProperty(name)) {
                     var path = libs[name];
                     // Add angular dependency
-                    if (name.substring(0, 8) === "angular-" && !shim[name]) {
-                        shim[name] = {
+                    if (name.substring(0, 8) === "angular-" && !cfg.shim[name]) {
+                        cfg.shim[name] = {
                             deps: ["angular"]
                         };
                     }
@@ -118,31 +132,16 @@ var require = (function (r) {
                 }
             }
             return all;
-        }
+        }());
 
-        function _minify_deps (deps) {
-            var all = [];
-            if (deps)
-                deps.forEach(function (dep) {
-                    if (!libs[dep] && dep.substring(dep.length-3) !== end)
-                        dep += min;
-                    all.push(dep);
-                });
-            return all;
-        }
+        cfg.process = process;
+        cfg.deps = cfg.min(cfg.deps);
 
-        require.paths = _minify();
-        require.deps = _minify_deps(require.deps);
-        require.shim = shim;
-
-        return require;
+        return cfg;
     };
 
-    var require = processRequireConfig(r);
-    if (require.testing) {
-        require.processRequireConfig = processRequireConfig;
-        this.require_config = require;
-    }
-    return require;
+    //
+    this.rcfg = process(r);
+    return this.rcfg;
 
 }.call(this, require));

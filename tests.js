@@ -1,19 +1,18 @@
     //
     describe("Test require object", function() {
-        var cfg = require_config;
 
         it("Check basic properties", function() {
-            expect(typeof(cfg)).toBe('object');
-            expect(typeof(cfg.paths)).toBe('object');
-            expect(typeof(cfg.shim)).toBe('object');
-            expect(cfg.deps instanceof Array).toBe(true);
-            expect(typeof(cfg.buildUrl)).toBe('undefined');
+            expect(typeof(rcfg)).toBe('object');
+            expect(typeof(rcfg.paths)).toBe('object');
+            expect(typeof(rcfg.shim)).toBe('object');
+            expect(rcfg.deps instanceof Array).toBe(true);
+            expect(typeof(rcfg.buildUrl)).toBe('undefined');
         });
 
-        it("Test processRequireConfig", function () {
-            var processRequireConfig = cfg.processRequireConfig;
-            expect(typeof(processRequireConfig)).toBe('function');
-            var r = processRequireConfig(
+        it("Test process", function () {
+            var process = rcfg.process;
+            expect(typeof(process)).toBe('function');
+            var r = process(
                 {
                     minify: true,
                     paths: {
@@ -21,11 +20,13 @@
                     }
                 });
             expect(r.minify).toBe(true);
+            expect(typeof(r.process)).toBe('function');
+            expect(typeof(r.min)).toBe('function');
             expect(r.paths.test1).toBe('this_should_not_be_processsed');
         });
 
         it("Test angular shim", function () {
-            var shim = cfg.shim;
+            var shim = rcfg.shim;
             expect(typeof(shim)).toBe('object');
             expect(typeof(shim["angular-ui-router"])).toBe('object');
             expect(shim["angular-ui-router"].deps.length).toBe(1);
@@ -33,7 +34,7 @@
         });
 
         it("Test require paths", function (done) {
-            var paths = cfg.paths;
+            var paths = rcfg.paths;
             expect(typeof(paths)).toBe('object');
             var all = [];
             for (name in paths) {
