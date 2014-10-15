@@ -2,8 +2,9 @@ var require = (function (r) {
     "use strict";
     r = r || {};
     var
+    root = this,
     end = '.js',
-    protocol = window.location.protocol === 'file:' ? 'http:' : '',
+    protocol = root.location ? (root.location.protocol === 'file:' ? 'http:' : '') : '',
     //
     process = function (cfg) {
         var
@@ -23,6 +24,7 @@ var require = (function (r) {
             "codemirror": "//cdnjs.cloudflare.com/ajax/libs/codemirror/3.21.0/codemirror",
             "c3": "//cdnjs.cloudflare.com/ajax/libs/c3/0.3.0/c3",
             "d3": "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3",
+            "google-analytics": "//www.google-analytics.com/analytics.js",
             "gridster": "//cdnjs.cloudflare.com/ajax/libs/jquery.gridster/0.5.6/jquery.gridster",
             "holder": "//cdnjs.cloudflare.com/ajax/libs/holder/2.3.1/holder",
             "highlight": "//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/highlight.min.js",
@@ -48,6 +50,9 @@ var require = (function (r) {
             },
             "jquery-cookies": {
                 deps: ["jquery"]
+            },
+            "google-analytics": {
+                exports: root.GoogleAnalyticsObject || "ga"
             },
             gridster: {
                 deps: ["jquery"]

@@ -46,4 +46,11 @@
                 done();
             });
         });
+
+        it("Test google-analytics", function (done) {
+            require(['google-analytics'], function (ga) {
+                expect(typeof(ga)).toBe('function');
+                done();
+            });
+        })
     });
