@@ -38,7 +38,8 @@ var require = (function (r) {
             "select": "//cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2",
             "sockjs": "//cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs",
             "typeahead": "//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle",
-            "topojson": "//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"
+            "topojson": "//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js",
+            "trianglify": "//cdnjs.cloudflare.com/ajax/libs/trianglify/0.1.5/trianglify"
         };
         //
         cfg.shim = {
@@ -77,6 +78,10 @@ var require = (function (r) {
             },
             typeahead: {
                 deps: ["jquery"]
+            },
+            trianglify: {
+                deps: ["d3"],
+                exports: "Trianglify"
             }
         };
         //
