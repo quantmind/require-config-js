@@ -2,10 +2,12 @@ var require = (function (r) {
     "use strict";
     r = r || {};
     var
+
     root = this,
     end = '.js',
     protocol = root.location ? (root.location.protocol === 'file:' ? 'http:' : '') : '',
     //
+    // Function which process the configuration object
     process = function (cfg) {
         var
         base = cfg.baseUrl || '',
@@ -31,6 +33,7 @@ var require = (function (r) {
             "katex": "//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.1.0/katex.min.js",
             "jquery": "//code.jquery.com/jquery-1.11.1",
             "leaflet": "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js",
+            "lodash": "//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash",
             "marked": "//cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked",
             "mathjax": "//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML",
             "mustache": "//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache",
