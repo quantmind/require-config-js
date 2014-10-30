@@ -40,6 +40,7 @@ var require = (function (r) {
             "restangular": "//cdnjs.cloudflare.com/ajax/libs/restangular/1.4.0/restangular",
             "select": "//cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2",
             "sockjs": "//cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs",
+            "stats": "//cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats",
             "typeahead": "//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle",
             "topojson": "//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js",
             "trianglify": "//cdnjs.cloudflare.com/ajax/libs/trianglify/0.1.5/trianglify"
