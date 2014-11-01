@@ -42,7 +42,7 @@ var require = (function (r) {
             "sockjs": "//cdnjs.cloudflare.com/ajax/libs/sockjs-client/0.3.4/sockjs",
             "stats": "//cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats",
             "typeahead": "//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle",
-            "topojson": "//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js",
+            "topojson": "http://d3js.org/topojson.v1",
             "trianglify": "//cdnjs.cloudflare.com/ajax/libs/trianglify/0.1.5/trianglify"
         };
         //
