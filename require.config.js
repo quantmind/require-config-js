@@ -86,6 +86,9 @@ var require = (function (r) {
             trianglify: {
                 deps: ["d3"],
                 exports: "Trianglify"
+            },
+            mathjax: {
+                exports: "MathJax"
             }
         };
         //
