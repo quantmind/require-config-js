@@ -5,63 +5,46 @@ module.exports = function(grunt) {
     var target = "require.config.js",
         target_min = target.replace('.js', '.min.js');
     //
-    // js hint all libraries
-    function jshint_libs () {
-        var result = {
-                gruntfile: "Gruntfile.js",
-                options: {
-                    browser: true,
-                    expr: true,
-                    globals: {
-                        jQuery: true,
-                        requirejs: true,
-                        require: true,
-                        exports: true,
-                        console: true,
-                        DOMParser: true,
-                        Showdown: true,
-                        prettyPrint: true,
-                        module: true,
-                        ok: true,
-                        equal: true,
-                        test: true,
-                        asyncTest: true,
-                        start: true
-                    }
-                }
-        };
-        for_each(libs, function (name) {
-            result[name] = this.dest;
-        });
-        return result;
-    }
-    //
     // This Grunt Config Entry
     // -------------------------------
     //
     // Initialise Grunt with all tasks defined above
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        concat: {
+            libs: {
+                options: {
+                    banner: grunt.file.read("js/banner.js")
+                },
+                src: ["js/src.js"],
+                dest: target
+            }
+        },
         uglify: {
-            libs: {dest: target_min,
-                   src: [target]}
+            libs: {
+                options: {
+                    banner: grunt.file.read("js/banner.js")
+                },
+                dest: target_min,
+                src: [target]}
         },
         jshint: {src: ['Gruntfile.js', target]},
         jasmine: {
             src : [],
             options : {
-                specs : 'tests.js',
+                specs : 'js/tests.js',
                 template: 'test.tpl.html'
             }
         }
     });
     //
     // These plugins provide necessary tasks.
+    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     //
-    grunt.registerTask('build', 'Lint and uglify', ['jshint', 'uglify']);
+    grunt.registerTask('build', 'Lint and uglify', ['concat', 'jshint', 'uglify']);
     grunt.registerTask('all', 'Lint, uglify and test', ['build', 'jasmine']);
     grunt.registerTask('default', ['all']);
 };
