@@ -85,6 +85,9 @@ var require = (function (r) {
             nvd3: {
                 deps: ["d3"]
             },
+            crossfilter: {
+                exports: "crossfilter"
+            },
             c3: {
                 deps: ["d3"]
             },
