@@ -26,7 +26,7 @@ var require = (function (r) {
             "codemirror": "//cdnjs.cloudflare.com/ajax/libs/codemirror/3.21.0/codemirror",
             "c3": "//cdnjs.cloudflare.com/ajax/libs/c3/0.3.0/c3",
             "crossfilter": "//cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.11/crossfilter",
-            "d3": "//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3",
+            "d3": "//cdnjs.cloudflare.com/ajax/libs/d3/3.5.1/d3",
             "google-analytics": "//www.google-analytics.com/analytics.js",
             "gridster": "//cdnjs.cloudflare.com/ajax/libs/jquery.gridster/0.5.6/jquery.gridster",
             "holder": "//cdnjs.cloudflare.com/ajax/libs/holder/2.3.1/holder",
