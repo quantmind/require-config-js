@@ -13,7 +13,7 @@ var require = (function (r) {
         base = cfg.baseUrl || '',
         min = cfg.minify ? '.min' : '',
         libs = {
-            "angular": "//ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular",
+            "angular": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular",
             "angular-animate": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-animate",
             "angular-mocks": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-mocks.js",
             "angular-route": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route",
