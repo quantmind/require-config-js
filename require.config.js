@@ -136,7 +136,7 @@ var require = (function (r) {
                                 deps: ["angular"]
                             };
                         // Add d3 dependency
-                        } else if (name.substring(0, 4) === "d3-") {
+                        } else if (name.substring(0, 3) === "d3-") {
                             cfg.shim[name] = {
                                 deps: ["d3"]
                             };
