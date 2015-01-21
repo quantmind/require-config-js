@@ -13,13 +13,13 @@ var require = (function (r) {
         base = cfg.baseUrl || '',
         min = cfg.minify ? '.min' : '',
         libs = {
-            "angular": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular",
+            "angular": "//ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular",
             "angular-animate": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-animate",
             "angular-mocks": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-mocks.js",
             "angular-route": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route",
             "angular-sanitize": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-sanitize",
-            "angular-strap": "//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.1.1/angular-strap",
-            "angular-ui-router": "//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router",
+            "angular-strap": "//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.1.4/angular-strap",
+            "angular-ui-router": "//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.11/angular-ui-router",
             "angular-ui-grid": "http://ui-grid.info/release/ui-grid-unstable",
             "aws": "//sdk.amazonaws.com/js/aws-sdk-2.0.0-rc13",
             "bootstrap": "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap",
@@ -122,11 +122,18 @@ var require = (function (r) {
             for(var name in libs) {
                 if(libs.hasOwnProperty(name)) {
                     var path = libs[name];
-                    // Add angular dependency
-                    if (name.substring(0, 8) === "angular-" && !cfg.shim[name]) {
-                        cfg.shim[name] = {
-                            deps: ["angular"]
-                        };
+                    if (!cfg.shim[name]) {
+                        // Add angular dependency
+                        if (name.substring(0, 8) === "angular-" && !cfg.shim[name]) {
+                            cfg.shim[name] = {
+                                deps: ["angular"]
+                            };
+                        // Add d3 dependency
+                        } else if (name.substring(0, 4) === "d3-") {
+                            cfg.shim[name] = {
+                                deps: ["d3"]
+                            };
+                        }
                     }
                     if (typeof(path) !== 'string') {
                         // Don't maanipulate it, live it as it is
