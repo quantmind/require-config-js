@@ -1,4 +1,4 @@
-//  require-config - v0.1.0
+//  require-config - v0.1.1
 
 //  Compiled 2015-01-22.
 //  Copyright (c) 2015 - Luca Sbardella
@@ -8,7 +8,7 @@
 var require = (function (r) {
     "use strict";
     r = r || {};
-    r.version = "0.1.0";
+    r.version = "0.1.1";
 
     var
     root = this,
