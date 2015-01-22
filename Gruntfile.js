@@ -22,11 +22,9 @@ module.exports = function(grunt) {
         },
         uglify: {
             libs: {
-                options: {
-                    banner: grunt.file.read("js/banner.js")
-                },
                 dest: target_min,
-                src: [target]}
+                src: [target]
+            }
         },
         jshint: {src: ['Gruntfile.js', target]},
         jasmine: {

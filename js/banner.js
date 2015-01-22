@@ -5,3 +5,8 @@
 //  Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %>.
 //  For all details and documentation:
 //  <%= pkg.homepage %>
+var require = (function (r) {
+    "use strict";
+    r = r || {};
+    r.version = "<%= pkg.version %>";
+

@@ -1,8 +1,4 @@
-var require = (function (r) {
-    "use strict";
-    r = r || {};
     var
-
     root = this,
     end = '.js',
     protocol = root.location ? (root.location.protocol === 'file:' ? 'http:' : '') : '',
@@ -18,8 +14,8 @@ var require = (function (r) {
             "angular-mocks": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-mocks.js",
             "angular-route": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route",
             "angular-sanitize": "//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-sanitize",
-            "angular-strap": "//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.1.6/angular-strap",
-            "angular-ui-router": "//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.13/angular-ui-router",
+            "angular-strap": "//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.1.1/angular-strap",
+            "angular-ui-router": "//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router",
             "angular-ui-grid": "http://ui-grid.info/release/ui-grid-unstable",
             "aws": "//sdk.amazonaws.com/js/aws-sdk-2.0.0-rc13",
             "bootstrap": "//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap",
