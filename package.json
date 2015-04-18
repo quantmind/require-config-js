@@ -1,7 +1,7 @@
 {
     "name": "require-config",
     "title": "require-config",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "homepage": "http://quantmind.github.io/require-config-js/",
     "author": {
         "name": "Luca Sbardella",

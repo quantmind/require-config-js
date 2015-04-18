@@ -1,0 +1,25 @@
+{
+  "name": "require-config-js",
+  "version": "0.2.0",
+  "homepage": "https://github.com/quantmind/require-config-js",
+  "description": "configuration for require.js",
+  "main": "require.config.js",
+  "moduleType": [
+    "amd"
+  ],
+  "keywords": [
+    "requirejs",
+    "configuration"
+  ],
+  "authors": [
+    "Luca Sbardella"
+  ],
+  "license": "BSD",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
